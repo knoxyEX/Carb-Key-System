@@ -224,16 +224,16 @@
 
     <div class="page-head">
       <h1>Your Key</h1>
-      <p>Finished Linkiverse? Your key appears here once we confirm you completed it. It works for 24 hours.</p>
+      <p>Finished Linkiverse? Your key appears here. It works for 24 hours.</p>
     </div>
 
     <div class="preview-banner" role="note">
       <span>⚠️</span>
-      <span><strong>Preview mode.</strong> Nothing confirms yet that Linkiverse was completed, and no real key exists. Everything below is a placeholder.</span>
+      <span><strong>Testing mode.</strong> Keys are real, but Linkiverse completion is not checked yet. Remove this notice once that check is added.</span>
     </div>
 
     <article class="card">
-      <span class="badge">PLACEHOLDER</span>
+      <span class="badge" id="placeholderBadge">PLACEHOLDER</span>
       <h2>🔑 Your Key</h2>
 
       <!-- Later, JavaScript fills in the ids below. -->
@@ -272,6 +272,11 @@
        --------------------------------------------------------- */
     const GET_KEY_URL = "index.html#getkey";
 
+    // The publishable key is meant to be public. NEVER paste the
+    // "secret" or "service_role" key into this file.
+    const SUPABASE_URL = "https://talbpzgyaxyyelhvlmpl.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_pBFKLHML7WzLDFQ1_mri1Q_pc0qq4qw";
+
     /* ---------------------------------------------------------
        BACKEND TODO 4: SUPABASE / DATABASE CONNECTION
        Later, set up the database connection here.
@@ -298,6 +303,7 @@
     function renderNotVerified() {
       $("keyValue").textContent = "XXXX-XXXX-XXXX";
       $("keyValue").classList.remove("real");
+      $("placeholderBadge").style.display = "";
       setValue("completionStatus", "Not verified yet", "placeholder");
       setValue("keyState", "Not active", "placeholder");
       setValue("timeLeft", "—", "placeholder");
@@ -312,7 +318,9 @@
     function renderKey(key, expiresAt) {
       $("keyValue").textContent = key;
       $("keyValue").classList.add("real");
-      setValue("completionStatus", "Verified", "good");
+      $("placeholderBadge").style.display = "none";
+      // Change this to "Verified" once the Linkiverse check is added to claim-key
+      setValue("completionStatus", "Not checked yet", "placeholder");
       setValue("keyState", "Active", "good");
       $("copyBtn").disabled = false;
 
@@ -332,6 +340,7 @@
     // 3) Expired: the 24 hours ran out, so the user starts again.
     function renderExpired() {
       clearInterval(countdownTimer);
+      try { localStorage.removeItem("keySessionToken"); } catch (e) {}
       setValue("keyState", "Expired", "bad");
       setValue("timeLeft", "00:00:00", "bad");
       $("copyBtn").disabled = true;
@@ -355,39 +364,63 @@
     // ---------- When the page opens ----------
     renderNotVerified();
 
+    // Sends the saved token to the server (the claim-key function)
+    // and shows the key it sends back.
+    async function loadKey() {
+      let token = null;
+      try { token = localStorage.getItem("keySessionToken"); } catch (e) {}
+
+      if (!token) {
+        showStatus("info", "No key session found. Press Get Key to start.");
+        return;
+      }
+
+      showStatus("info", "Getting your key...");
+      try {
+        const res = await fetch(SUPABASE_URL + "/functions/v1/claim-key", {
+          method: "POST",
+          headers: { "apikey": SUPABASE_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ token: token })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.key) {
+          renderKey(data.key, new Date(data.expiresAt).getTime());
+          showStatus("success", "Your key is ready. It works for 24 hours.");
+        } else {
+          // Bad or expired session: forget it so the user can start again
+          if (res.status === 400 || res.status === 410) {
+            try { localStorage.removeItem("keySessionToken"); } catch (e) {}
+          }
+          showStatus("error", data.error || "Could not get your key.");
+        }
+      } catch (err) {
+        showStatus("error", "Could not reach the server. Refresh the page to try again.");
+      }
+    }
+
+    loadKey();
+
     /* ---------------------------------------------------------
        BACKEND TODO 8: CALLBACK PARAMETERS
-       When Linkiverse sends the user back, it may add a value to
-       this page's address (a token or hash). Read it here:
+       If Linkiverse adds a value to this page's address when it
+       sends the user back (a token or hash), read it here:
          const params = new URLSearchParams(window.location.search);
          const proof = params.get("PARAMETER-NAME-FROM-LINKIVERSE");
-       Check Linkiverse's documentation for the real name.
-       Do not trust this value on its own, since anyone can type
-       it into the address bar.
+       Then send it to claim-key together with the token (add it to
+       the body in loadKey above).
        --------------------------------------------------------- */
 
     /* ---------------------------------------------------------
        BACKEND TODO 7: LINKIVERSE COMPLETION VERIFICATION
-       Send the value from TODO 8 (and your one-time token) to
-       YOUR SERVER. The server checks it with Linkiverse and
-       decides if the user really finished. The page must never
-       decide this on its own.
-       --------------------------------------------------------- */
-
-    /* ---------------------------------------------------------
-       BACKEND TODO 2: KEY GENERATION AND ACTIVATION
-       If the server says "verified", it creates the key, saves it
-       with an expiry time 24 hours from now, and sends both back.
-       Then call:  renderKey(serverKey, serverExpiresAt);
-       If the user already has an active key, the server sends
-       that same key back instead of making a new one.
+       This check goes inside the claim-key function on Supabase
+       (see the TODO comment there), never in this file.
        --------------------------------------------------------- */
 
     /* ---------------------------------------------------------
        BACKEND TODO 6: KEY EXPIRATION CHECKING
-       The countdown above is only for show. The server decides
-       if a key is still valid, every time the script checks it.
-       If the server says "expired", call renderExpired().
+       The countdown here is only for show. The server decides if
+       a key is still valid. If it says "expired", call renderExpired().
        --------------------------------------------------------- */
   </script>
 </body>
