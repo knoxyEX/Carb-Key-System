@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your Brand | Your Key</title>
+
+  <style>
+    /* =========================================================
+       1. COLORS AND SETTINGS
+       Keep these the same as in index.html so both pages match.
+       ========================================================= */
+    :root {
+      --bg: #0b0d12;
+      --bg-glow: #16213a;
+      --glass: rgba(255, 255, 255, 0.045);
+      --glass-border: rgba(255, 255, 255, 0.09);
+      --text: #e9edf5;
+      --muted: #8d96a8;
+      --accent: #2f7bff;
+      --accent-hover: #5594ff;
+      --success: #37c978;
+      --error: #ff5c6c;
+      --info: #f2b84b;
+      --radius: 18px;
+    }
+
+    /* =========================================================
+       2. BASIC PAGE SETUP
+       ========================================================= */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+      color: var(--text);
+      line-height: 1.5;
+      background:
+        radial-gradient(ellipse at top left, var(--bg-glow) 0%, transparent 55%),
+        radial-gradient(ellipse at bottom right, #1a1440 0%, transparent 50%),
+        var(--bg);
+      background-attachment: fixed;
+    }
+
+    main { flex: 1; width: 100%; max-width: 640px; margin: 0 auto; padding: 28px 20px 24px; }
+
+    h1 { font-size: clamp(1.7rem, 5vw, 2.4rem); line-height: 1.15; }
+    h2 { font-size: 1.15rem; margin-bottom: 14px; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pop {
+      from { opacity: 0; transform: scale(0.96) translateY(-6px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* =========================================================
+       3. TOP BAR: BRAND / LOGO
+       Replace "Y" and "Your Brand" with your own logo and name.
+       ========================================================= */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 18px;
+      margin-bottom: 30px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      animation: fadeIn 0.6s ease both;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .logo-box {
+      width: 42px; height: 42px;
+      border-radius: 12px;
+      display: grid; place-items: center;
+      font-weight: 800; font-size: 1.2rem;
+      background: linear-gradient(135deg, var(--accent), #1b4fd0);
+      box-shadow: 0 6px 20px rgba(47, 123, 255, 0.35);
+    }
+    .brand-name { font-size: 1.25rem; font-weight: 800; }
+
+    /* =========================================================
+       4. PAGE CONTENT
+       ========================================================= */
+    .page-head { margin-bottom: 20px; animation: fadeIn 0.5s ease both; }
+    .page-head p { color: var(--muted); margin-top: 6px; }
+
+    .preview-banner {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 14px 16px;
+      margin-bottom: 22px;
+      color: var(--info);
+      background: rgba(242, 184, 75, 0.09);
+      border: 1px solid rgba(242, 184, 75, 0.35);
+      border-radius: 14px;
+      font-size: 0.95rem;
+    }
+
+    .card {
+      position: relative;
+      padding: 26px 24px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      animation: fadeIn 0.6s ease both;
+    }
+
+    .badge {
+      position: absolute; top: 18px; right: 18px;
+      font-size: 0.75rem; font-weight: 700;
+      color: var(--info);
+      background: rgba(242, 184, 75, 0.12);
+      border: 1px dashed rgba(242, 184, 75, 0.5);
+      border-radius: 999px;
+      padding: 3px 10px;
+    }
+
+    .key-display {
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: clamp(1.3rem, 4vw, 1.7rem);
+      letter-spacing: 2px;
+      color: var(--muted);
+      padding: 14px 16px;
+      margin-bottom: 18px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px dashed var(--glass-border);
+      border-radius: 12px;
+      text-align: center;
+      word-break: break-all;
+    }
+    .key-display.real { color: var(--text); border-style: solid; }
+
+    .info-list { list-style: none; }
+    .info-list li {
+      display: flex; justify-content: space-between; gap: 12px;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .info-list li:last-child { border-bottom: none; }
+    .info-list .label { color: var(--muted); }
+    .info-list .value { font-weight: 600; text-align: right; }
+    .placeholder { color: var(--muted); font-style: italic; }
+    .good { color: var(--success); font-style: normal; }
+    .bad  { color: var(--error);   font-style: normal; }
+
+    .status {
+      display: none;
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-weight: 600;
+      border: 1px solid transparent;
+    }
+    .status.show { display: block; animation: pop 0.3s ease both; }
+    .status.success { color: var(--success); background: rgba(55, 201, 120, 0.1); border-color: rgba(55, 201, 120, 0.35); }
+    .status.error   { color: var(--error);   background: rgba(255, 92, 108, 0.1); border-color: rgba(255, 92, 108, 0.35); }
+    .status.info    { color: var(--info);    background: rgba(242, 184, 75, 0.1); border-color: rgba(242, 184, 75, 0.35); }
+
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 22px; }
+
+    /* =========================================================
+       5. BUTTONS
+       ========================================================= */
+    .btn {
+      font: inherit;
+      font-weight: 700;
+      color: #fff;
+      background: var(--accent);
+      border: 1px solid transparent;
+      border-radius: 12px;
+      padding: 12px 22px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+    .btn:hover:not(:disabled) {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 22px rgba(47, 123, 255, 0.4);
+    }
+    .btn:active:not(:disabled) { transform: translateY(0) scale(0.96); box-shadow: none; }
+    .btn:disabled { cursor: not-allowed; background: rgba(255, 255, 255, 0.1); color: var(--muted); }
+    .btn-ghost { background: rgba(255, 255, 255, 0.07); border-color: var(--glass-border); }
+    .btn-ghost:hover:not(:disabled) { background: rgba(255, 255, 255, 0.13); box-shadow: none; }
+    .btn:focus-visible { outline: 3px solid rgba(85, 148, 255, 0.6); outline-offset: 2px; }
+
+    /* =========================================================
+       6. FOOTER AND MOBILE
+       ========================================================= */
+    footer { text-align: center; color: var(--muted); font-size: 0.85rem; padding: 20px; }
+
+    @media (max-width: 520px) {
+      .card { padding: 24px 16px; }
+      .actions .btn { flex: 1 1 100%; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+
+    <!-- ===== TOP BAR: LOGO ===== -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo-box">Y</div>
+        <div class="brand-name">Your Brand</div>
+      </div>
+      <a href="index.html" style="text-decoration:none">
+        <button class="btn btn-ghost" type="button">Dashboard</button>
+      </a>
+    </header>
+
+    <div class="page-head">
+      <h1>Your Key</h1>
+      <p>Finished Linkiverse? Your key appears here. It works for 24 hours.</p>
+    </div>
+
+    <div class="preview-banner" role="note">
+      <span>⚠️</span>
+      <span><strong>Testing mode.</strong> Keys are real, but Linkiverse completion is not checked yet. Remove this notice once that check is added.</span>
+    </div>
+
+    <article class="card">
+      <span class="badge" id="placeholderBadge">PLACEHOLDER</span>
+      <h2>🔑 Your Key</h2>
+
+      <!-- Later, JavaScript fills in the ids below. -->
+      <div class="key-display" id="keyValue">XXXX-XXXX-XXXX</div>
+
+      <ul class="info-list">
+        <li><span class="label">Linkiverse</span><span class="value placeholder" id="completionStatus">Not verified yet</span></li>
+        <li><span class="label">Key status</span><span class="value placeholder" id="keyState">Not active</span></li>
+        <li><span class="label">Time left</span><span class="value placeholder" id="timeLeft">—</span></li>
+      </ul>
+
+      <div class="status" id="pageStatus" role="status" aria-live="polite"></div>
+
+      <div class="actions">
+        <button class="btn" id="copyBtn" type="button" disabled>Copy Key</button>
+        <button class="btn btn-ghost" id="getKeyBtn" type="button">🔑 Get Key</button>
+      </div>
+    </article>
+
+  </main>
+
+  <footer>Made with help from ChatGPT</footer>
+
+  <script>
+    /* =========================================================
+       JAVASCRIPT (front end only)
+       Nothing here creates a real key or checks Linkiverse.
+       Search for "BACKEND TODO" to find every place the real
+       system will be added later.
+       ========================================================= */
+
+    /* ---------------------------------------------------------
+       SETTINGS
+       Keep this file and index.html in the same folder.
+       GET_KEY_URL opens the Get Key pop-up on the dashboard.
+       --------------------------------------------------------- */
+    const GET_KEY_URL = "index.html#getkey";
+
+    // The publishable key is meant to be public. NEVER paste the
+    // "secret" or "service_role" key into this file.
+    const SUPABASE_URL = "https://talbpzgyaxyyelhvlmpl.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_pBFKLHML7WzLDFQ1_mri1Q_pc0qq4qw";
+
+    /* ---------------------------------------------------------
+       BACKEND TODO 4: SUPABASE / DATABASE CONNECTION
+       Later, set up the database connection here.
+       --------------------------------------------------------- */
+
+    const $ = (id) => document.getElementById(id);
+
+    function showStatus(type, message) {
+      const box = $("pageStatus");
+      box.className = "status show " + type;   // type: "success", "error" or "info"
+      box.textContent = message;
+    }
+
+    // Changes the text and color of one row in the list
+    function setValue(id, text, look) {
+      const el = $(id);
+      el.textContent = text;
+      el.className = "value " + look;          // look: "placeholder", "good" or "bad"
+    }
+
+    // ---------- Three possible looks for this page ----------
+
+    // 1) Default: nothing verified, no key (what you see right now)
+    function renderNotVerified() {
+      $("keyValue").textContent = "XXXX-XXXX-XXXX";
+      $("keyValue").classList.remove("real");
+      $("placeholderBadge").style.display = "";
+      setValue("completionStatus", "Not verified yet", "placeholder");
+      setValue("keyState", "Not active", "placeholder");
+      setValue("timeLeft", "—", "placeholder");
+      $("copyBtn").disabled = true;
+    }
+
+    // 2) Verified: show the real key and count down the 24 hours.
+    //    Not used yet. Later your server's answer calls this, e.g.
+    //    renderKey("THE-KEY-FROM-THE-SERVER", expiresAtInMilliseconds)
+    let countdownTimer = null;
+
+    function renderKey(key, expiresAt) {
+      $("keyValue").textContent = key;
+      $("keyValue").classList.add("real");
+      $("placeholderBadge").style.display = "none";
+      // Change this to "Verified" once the Linkiverse check is added to claim-key
+      setValue("completionStatus", "Not checked yet", "placeholder");
+      setValue("keyState", "Active", "good");
+      $("copyBtn").disabled = false;
+
+      clearInterval(countdownTimer);
+      function tick() {
+        const left = expiresAt - Date.now();
+        if (left <= 0) { renderExpired(); return; }
+        const h = String(Math.floor(left / 3600000)).padStart(2, "0");
+        const m = String(Math.floor(left / 60000) % 60).padStart(2, "0");
+        const s = String(Math.floor(left / 1000) % 60).padStart(2, "0");
+        setValue("timeLeft", h + ":" + m + ":" + s, "good");
+      }
+      tick();
+      countdownTimer = setInterval(tick, 1000);
+    }
+
+    // 3) Expired: the 24 hours ran out, so the user starts again.
+    function renderExpired() {
+      clearInterval(countdownTimer);
+      try { localStorage.removeItem("keySessionToken"); } catch (e) {}
+      setValue("keyState", "Expired", "bad");
+      setValue("timeLeft", "00:00:00", "bad");
+      $("copyBtn").disabled = true;
+      showStatus("error", "Your key expired. Press Get Key to get a new one.");
+    }
+
+    // ---------- Buttons ----------
+    $("getKeyBtn").addEventListener("click", () => {
+      window.location.href = GET_KEY_URL;
+    });
+
+    $("copyBtn").addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText($("keyValue").textContent);
+        showStatus("success", "Key copied.");
+      } catch (err) {
+        showStatus("error", "Could not copy. Select the key and copy it by hand.");
+      }
+    });
+
+    // ---------- When the page opens ----------
+    renderNotVerified();
+
+    // Sends the saved token to the server (the claim-key function)
+    // and shows the key it sends back.
+    async function loadKey() {
+      let token = null;
+      try { token = localStorage.getItem("keySessionToken"); } catch (e) {}
+
+      if (!token) {
+        showStatus("info", "No key session found. Press Get Key to start.");
+        return;
+      }
+
+      showStatus("info", "Getting your key...");
+      try {
+        const res = await fetch(SUPABASE_URL + "/functions/v1/claim-key", {
+          method: "POST",
+          headers: { "apikey": SUPABASE_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ token: token })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.key) {
+          renderKey(data.key, new Date(data.expiresAt).getTime());
+          showStatus("success", "Your key is ready. It works for 24 hours.");
+        } else {
+          // Bad or expired session: forget it so the user can start again
+          if (res.status === 400 || res.status === 410) {
+            try { localStorage.removeItem("keySessionToken"); } catch (e) {}
+          }
+          showStatus("error", data.error || "Could not get your key.");
+        }
+      } catch (err) {
+        showStatus("error", "Could not reach the server. Refresh the page to try again.");
+      }
+    }
+
+    loadKey();
+
+    /* ---------------------------------------------------------
+       BACKEND TODO 8: CALLBACK PARAMETERS
+       If Linkiverse adds a value to this page's address when it
+       sends the user back (a token or hash), read it here:
+         const params = new URLSearchParams(window.location.search);
+         const proof = params.get("PARAMETER-NAME-FROM-LINKIVERSE");
+       Then send it to claim-key together with the token (add it to
+       the body in loadKey above).
+       --------------------------------------------------------- */
+
+    /* ---------------------------------------------------------
+       BACKEND TODO 7: LINKIVERSE COMPLETION VERIFICATION
+       This check goes inside the claim-key function on Supabase
+       (see the TODO comment there), never in this file.
+       --------------------------------------------------------- */
+
+    /* ---------------------------------------------------------
+       BACKEND TODO 6: KEY EXPIRATION CHECKING
+       The countdown here is only for show. The server decides if
+       a key is still valid. If it says "expired", call renderExpired().
+       --------------------------------------------------------- */
+  </script>
+</body>
+</html>
