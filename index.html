@@ -475,6 +475,14 @@
        --------------------------------------------------------- */
     const LINKIVERSE_URL = "";   // BACKEND TODO 1: paste your Linkiverse link here
 
+    /* ---------------------------------------------------------
+       SUPABASE SETTINGS
+       The publishable key is meant to be public. NEVER paste the
+       "secret" or "service_role" key into this file.
+       --------------------------------------------------------- */
+    const SUPABASE_URL = "https://talbpzgyaxyyelhvlmpl.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_pBFKLHML7WzLDFQ1_mri1Q_pc0qq4qw";
+
     // ---------- Helpers ----------
     const $ = (id) => document.getElementById(id);
 
@@ -540,20 +548,41 @@
     $("getKeyBtn").addEventListener("click", () => openModal("getkey"));
     $("getKeyBtn2").addEventListener("click", () => openModal("getkey"));
 
-    $("continueBtn").addEventListener("click", () => {
-      /* -------------------------------------------------------
-         BACKEND TODO 1: LINKIVERSE REDIRECT
-         Sends the user to Linkiverse. It only works after you
-         paste your link into LINKIVERSE_URL near the top.
-         ------------------------------------------------------- */
+    $("continueBtn").addEventListener("click", async () => {
+      // No Linkiverse link yet? Tell the owner instead of sending the user nowhere.
       if (LINKIVERSE_URL === "") {
         showStatus($("getkeyStatus"), "error", "No Linkiverse link added yet. Paste it into LINKIVERSE_URL in the code.");
         return;
       }
 
-      // Key generation (BACKEND TODO 2) happens on generate.html, not here.
+      const btn = $("continueBtn");
+      btn.disabled = true;
+      showStatus($("getkeyStatus"), "info", "Starting...");
 
-      window.location.href = LINKIVERSE_URL;
+      try {
+        // Ask the server for a one-time session token (the start-session function)
+        const res = await fetch(SUPABASE_URL + "/functions/v1/start-session", {
+          method: "POST",
+          headers: { "apikey": SUPABASE_KEY, "Content-Type": "application/json" },
+          body: "{}"
+        });
+        const data = await res.json();
+        if (!res.ok || !data.token) throw new Error("no token");
+
+        // Remember the token. generate.html reads it when the user comes back.
+        localStorage.setItem("keySessionToken", data.token);
+
+        /* -----------------------------------------------------
+           BACKEND TODO 1: LINKIVERSE REDIRECT
+           The user is sent to your Linkiverse link here.
+           BACKEND TODO 7: the check that they really finished
+           Linkiverse belongs in the server function "claim-key".
+           ----------------------------------------------------- */
+        window.location.href = LINKIVERSE_URL;
+      } catch (err) {
+        showStatus($("getkeyStatus"), "error", "Could not start. Please try again.");
+        btn.disabled = false;
+      }
     });
 
     // ---------- REDEEM KEY buttons ----------
