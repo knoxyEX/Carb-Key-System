@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your Brand | Generate Key</title>
+
+  <style>
+    /* =========================================================
+       1. COLORS AND SETTINGS
+       Keep these the same as in index.html so both pages match.
+       ========================================================= */
+    :root {
+      --bg: #0b0d12;
+      --bg-glow: #16213a;
+      --glass: rgba(255, 255, 255, 0.045);
+      --glass-border: rgba(255, 255, 255, 0.09);
+      --text: #e9edf5;
+      --muted: #8d96a8;
+      --accent: #2f7bff;
+      --accent-hover: #5594ff;
+      --success: #37c978;
+      --error: #ff5c6c;
+      --info: #f2b84b;
+      --radius: 18px;
+    }
+
+    /* =========================================================
+       2. BASIC PAGE SETUP
+       ========================================================= */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+      color: var(--text);
+      line-height: 1.5;
+      background:
+        radial-gradient(ellipse at top left, var(--bg-glow) 0%, transparent 55%),
+        radial-gradient(ellipse at bottom right, #1a1440 0%, transparent 50%),
+        var(--bg);
+      background-attachment: fixed;
+    }
+
+    main { flex: 1; width: 100%; max-width: 640px; margin: 0 auto; padding: 28px 20px 24px; }
+
+    h1 { font-size: clamp(1.7rem, 5vw, 2.4rem); line-height: 1.15; }
+    h2 { font-size: 1.15rem; margin-bottom: 14px; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pop {
+      from { opacity: 0; transform: scale(0.96) translateY(-6px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* =========================================================
+       3. TOP BAR: BRAND / LOGO
+       Replace "Y" and "Your Brand" with your own logo and name.
+       ========================================================= */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 18px;
+      margin-bottom: 30px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      animation: fadeIn 0.6s ease both;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .logo-box {
+      width: 42px; height: 42px;
+      border-radius: 12px;
+      display: grid; place-items: center;
+      font-weight: 800; font-size: 1.2rem;
+      background: linear-gradient(135deg, var(--accent), #1b4fd0);
+      box-shadow: 0 6px 20px rgba(47, 123, 255, 0.35);
+    }
+    .brand-name { font-size: 1.25rem; font-weight: 800; }
+
+    /* =========================================================
+       4. PAGE CONTENT
+       ========================================================= */
+    .page-head { margin-bottom: 20px; animation: fadeIn 0.5s ease both; }
+    .page-head p { color: var(--muted); margin-top: 6px; }
+
+    .preview-banner {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 14px 16px;
+      margin-bottom: 22px;
+      color: var(--info);
+      background: rgba(242, 184, 75, 0.09);
+      border: 1px solid rgba(242, 184, 75, 0.35);
+      border-radius: 14px;
+      font-size: 0.95rem;
+    }
+
+    .card {
+      position: relative;
+      padding: 26px 24px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      animation: fadeIn 0.6s ease both;
+    }
+
+    .badge {
+      position: absolute; top: 18px; right: 18px;
+      font-size: 0.75rem; font-weight: 700;
+      color: var(--info);
+      background: rgba(242, 184, 75, 0.12);
+      border: 1px dashed rgba(242, 184, 75, 0.5);
+      border-radius: 999px;
+      padding: 3px 10px;
+    }
+
+    .info-list { list-style: none; margin-bottom: 8px; }
+    .info-list li {
+      display: flex; justify-content: space-between; gap: 12px;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .info-list li:last-child { border-bottom: none; }
+    .info-list .label { color: var(--muted); }
+    .info-list .value { font-weight: 600; text-align: right; }
+    .placeholder { color: var(--muted); font-style: italic; }
+
+    /* =========================================================
+       5. THE 3 STEPS (Generate > Get Key > Dashboard)
+       JavaScript marks each step "done", "active" or "locked".
+       ========================================================= */
+    .flow { list-style: none; margin-top: 18px; }
+
+    .flow-step {
+      display: flex; gap: 16px; align-items: flex-start;
+      padding: 18px 0;
+      border-top: 1px solid var(--glass-border);
+      transition: opacity 0.3s ease;
+    }
+    .flow-step.locked { opacity: 0.4; }
+
+    .flow-num {
+      flex: none;
+      width: 32px; height: 32px;
+      display: grid; place-items: center;
+      font-weight: 700;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--muted);
+      transition: background 0.3s, color 0.3s;
+    }
+    .flow-step.active .flow-num { background: rgba(47, 123, 255, 0.2); color: var(--accent-hover); }
+    .flow-step.done .flow-num { background: rgba(55, 201, 120, 0.18); color: var(--success); }
+
+    .flow-body { flex: 1; min-width: 0; }
+    .flow-body h3 { font-size: 1.05rem; }
+    .flow-body p { color: var(--muted); margin: 2px 0 12px; }
+
+    .key-display {
+      display: none;
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: clamp(1.2rem, 4vw, 1.6rem);
+      letter-spacing: 2px;
+      color: var(--muted);
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px dashed var(--glass-border);
+      border-radius: 12px;
+      text-align: center;
+    }
+    .key-display.show { display: block; animation: pop 0.35s ease both; }
+
+    .status {
+      display: none;
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-weight: 600;
+      border: 1px solid transparent;
+    }
+    .status.show { display: block; animation: pop 0.3s ease both; }
+    .status.success { color: var(--success); background: rgba(55, 201, 120, 0.1); border-color: rgba(55, 201, 120, 0.35); }
+    .status.error   { color: var(--error);   background: rgba(255, 92, 108, 0.1); border-color: rgba(255, 92, 108, 0.35); }
+    .status.info    { color: var(--info);    background: rgba(242, 184, 75, 0.1); border-color: rgba(242, 184, 75, 0.35); }
+
+    /* =========================================================
+       6. BUTTONS
+       ========================================================= */
+    .btn {
+      font: inherit;
+      font-weight: 700;
+      color: #fff;
+      background: var(--accent);
+      border: 1px solid transparent;
+      border-radius: 12px;
+      padding: 12px 22px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+    .btn:hover:not(:disabled) {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 22px rgba(47, 123, 255, 0.4);
+    }
+    .btn:active:not(:disabled) { transform: translateY(0) scale(0.96); box-shadow: none; }
+    .btn:disabled { cursor: not-allowed; background: rgba(255, 255, 255, 0.1); color: var(--muted); }
+    .btn:focus-visible { outline: 3px solid rgba(85, 148, 255, 0.6); outline-offset: 2px; }
+
+    /* =========================================================
+       7. FOOTER AND MOBILE
+       ========================================================= */
+    footer { text-align: center; color: var(--muted); font-size: 0.85rem; padding: 20px; }
+
+    @media (max-width: 520px) {
+      .card { padding: 24px 16px; }
+      .flow-body .btn { width: 100%; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+
+    <!-- ===== TOP BAR: LOGO ===== -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo-box">Y</div>
+        <div class="brand-name">Your Brand</div>
+      </div>
+    </header>
+
+    <div class="page-head">
+      <h1>Generate Key</h1>
+      <p>You finished Linkiverse. Follow the steps below to get your key.</p>
+    </div>
+
+    <div class="preview-banner" role="note">
+      <span>⚠️</span>
+      <span><strong>Preview mode.</strong> Nothing confirms yet that Linkiverse was completed, and no real key is created. The key you see below is a placeholder.</span>
+    </div>
+
+    <article class="card">
+      <span class="badge">PLACEHOLDER</span>
+      <h2>🔑 Your Key</h2>
+      <ul class="info-list">
+        <li><span class="label">Linkiverse</span><span class="value placeholder" id="completionStatus">Not verified yet</span></li>
+      </ul>
+
+      <ol class="flow">
+        <!-- STEP 1: Generate -->
+        <li class="flow-step active" id="step1">
+          <div class="flow-num">1</div>
+          <div class="flow-body">
+            <h3>Generate</h3>
+            <p>Create a key for your account.</p>
+            <button class="btn" id="generateBtn" type="button">🔑 Generate</button>
+            <div class="status" id="generateStatus" role="status" aria-live="polite"></div>
+          </div>
+        </li>
+
+        <!-- STEP 2: Get Key -->
+        <li class="flow-step locked" id="step2">
+          <div class="flow-num">2</div>
+          <div class="flow-body">
+            <h3>Get Key</h3>
+            <p>Show your key so you can copy it.</p>
+            <div class="key-display" id="keyValue">XXXX-XXXX-XXXX</div>
+            <button class="btn" id="getKeyBtn" type="button" disabled>Get Key</button>
+            <div class="status" id="getKeyStatus" role="status" aria-live="polite"></div>
+          </div>
+        </li>
+
+        <!-- STEP 3: Go to the dashboard and activate -->
+        <li class="flow-step locked" id="step3">
+          <div class="flow-num">3</div>
+          <div class="flow-body">
+            <h3>Activate</h3>
+            <p>Go to the Dashboard and paste your key to activate it.</p>
+            <button class="btn" id="dashboardBtn" type="button" disabled>Go to Dashboard to Activate →</button>
+          </div>
+        </li>
+      </ol>
+    </article>
+
+  </main>
+
+  <footer>Made with help from ChatGPT</footer>
+
+  <script>
+    /* =========================================================
+       JAVASCRIPT (front end only)
+       Nothing here creates a real key or checks Linkiverse.
+       Search for "BACKEND TODO" to find every place the real
+       system will be added later.
+       ========================================================= */
+
+    /* ---------------------------------------------------------
+       SETTINGS
+       DASHBOARD_URL: where the Activate button sends the user.
+       index.html#activate opens the Redeem box on the dashboard.
+       Keep this file and index.html in the same folder.
+       --------------------------------------------------------- */
+    const DASHBOARD_URL = "index.html#activate";
+
+    /* ---------------------------------------------------------
+       BACKEND TODO 4: SUPABASE / DATABASE CONNECTION
+       Later, set up the database connection here.
+       --------------------------------------------------------- */
+
+    const $ = (id) => document.getElementById(id);
+
+    function showStatus(box, type, message) {
+      box.className = "status show " + type;   // type: "success", "error" or "info"
+      box.textContent = message;
+    }
+
+    // ---------- Steps: which one is open ----------
+    // current = 1, 2 or 3. Earlier steps are "done", later ones are "locked".
+    function setStep(current) {
+      [1, 2, 3].forEach((n) => {
+        const step = $("step" + n);
+        step.classList.toggle("done", n < current);
+        step.classList.toggle("active", n === current);
+        step.classList.toggle("locked", n > current);
+      });
+      $("generateBtn").disabled  = current !== 1;
+      $("getKeyBtn").disabled    = current !== 2;
+      $("dashboardBtn").disabled = current !== 3;
+    }
+
+    /* ---------------------------------------------------------
+       BACKEND TODO 8: CALLBACK PARAMETERS
+       If Linkiverse adds anything to this page's address when it
+       sends the user back (a token, an id, a status), read it here:
+         const params = new URLSearchParams(window.location.search);
+         const token = params.get("PARAMETER-NAME-FROM-LINKIVERSE");
+       Check Linkiverse's documentation for the real names.
+       Do not trust these values on their own, since anyone can
+       type them into the address bar.
+       --------------------------------------------------------- */
+
+    /* ---------------------------------------------------------
+       BACKEND TODO 7: LINKIVERSE COMPLETION VERIFICATION
+       Anyone can open generate.html without finishing Linkiverse.
+       Later, send the callback values to your server as soon as
+       this page loads, and let the server confirm Linkiverse was
+       really completed. Only then set #completionStatus and let
+       the Generate button work. Until then the status stays
+       "Not verified yet".
+       --------------------------------------------------------- */
+
+    // ---------- STEP 1: Generate ----------
+    $("generateBtn").addEventListener("click", () => {
+      /* -------------------------------------------------------
+         BACKEND TODO 2: KEY GENERATION
+         Later, ask your server to create a key for this user
+         here. The server should only do this after it verified
+         Linkiverse (TODO 7), and should reuse the same key if
+         this user already has one. Key creation must never
+         happen in this file.
+         ------------------------------------------------------- */
+      showStatus($("generateStatus"), "info", "Preview only: no real key was generated.");
+      setStep(2);
+    });
+
+    // ---------- STEP 2: Get Key ----------
+    $("getKeyBtn").addEventListener("click", () => {
+      /* -------------------------------------------------------
+         BACKEND TODO 2 / 4: GET THE KEY FROM THE SERVER
+         Later, fetch the user's real key from your server or
+         database here, put it in #keyValue, and add a Copy button.
+         ------------------------------------------------------- */
+      $("keyValue").classList.add("show");
+      showStatus($("getKeyStatus"), "info", "Preview only: this is a placeholder, not a real key.");
+      setStep(3);
+    });
+
+    // ---------- STEP 3: Go to the dashboard ----------
+    $("dashboardBtn").addEventListener("click", () => {
+      window.location.href = DASHBOARD_URL;
+    });
+  </script>
+</body>
+</html>
