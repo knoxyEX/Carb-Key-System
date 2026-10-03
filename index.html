@@ -396,8 +396,8 @@
         <ol class="steps">
           <li>Press Get Key to start.</li>
           <li>You will be sent to Linkiverse to finish the required steps.</li>
-          <li>You land on the Generate Key page and create your key.</li>
-          <li>Go to the Dashboard and activate it.</li>
+          <li>You land on your key page, and your key is activated for 24 hours.</li>
+          <li>Copy the key into the script. When it expires, do these steps again.</li>
         </ol>
         <div class="actions">
           <button class="btn" id="getKeyBtn2" type="button">🔑 Get Key</button>
@@ -413,7 +413,7 @@
   <div class="overlay" id="modal-getkey" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="getkeyTitle">
       <h2 id="getkeyTitle">🔑 Get your key</h2>
-      <p>You will be sent to Linkiverse to complete the required steps. When you finish, Linkiverse brings you back to the Generate Key page.</p>
+      <p>You will be sent to Linkiverse to complete the required steps. When you finish, Linkiverse brings you back to your key page. Your key lasts 24 hours.</p>
       <div class="status" id="getkeyStatus" role="status" aria-live="polite"></div>
       <div class="modal-actions">
         <button class="btn btn-ghost" data-close type="button">Close</button>
@@ -583,17 +583,18 @@
     $("submitRedeemBtn").addEventListener("click", redeemKey);
     $("keyInput").addEventListener("keydown", (e) => { if (e.key === "Enter") redeemKey(); });
 
-    // ---------- Coming from the Generate Key page ----------
-    // generate.html sends users here with  #activate  on the end,
-    // so the Redeem box opens right away.
-    function handleActivateLink() {
-      if (window.location.hash !== "#activate") return;
-      showView("dashboard");
-      openModal("redeem");
+    // ---------- Coming from the key page ----------
+    // generate.html sends users here with  #getkey  on the end
+    // (the "Get Key" button there), so the Get Key pop-up opens.
+    function handleHashLinks() {
+      if (window.location.hash === "#getkey") {
+        showView("dashboard");
+        openModal("getkey");
+      }
     }
 
-    handleActivateLink();
-    window.addEventListener("hashchange", handleActivateLink);
+    handleHashLinks();
+    window.addEventListener("hashchange", handleHashLinks);
   </script>
 </body>
 </html>
