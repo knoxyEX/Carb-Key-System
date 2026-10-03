@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Your Brand | Generate Key</title>
+  <title>Your Brand | Your Key</title>
 
   <style>
     /* =========================================================
@@ -125,7 +125,22 @@
       padding: 3px 10px;
     }
 
-    .info-list { list-style: none; margin-bottom: 8px; }
+    .key-display {
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: clamp(1.3rem, 4vw, 1.7rem);
+      letter-spacing: 2px;
+      color: var(--muted);
+      padding: 14px 16px;
+      margin-bottom: 18px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px dashed var(--glass-border);
+      border-radius: 12px;
+      text-align: center;
+      word-break: break-all;
+    }
+    .key-display.real { color: var(--text); border-style: solid; }
+
+    .info-list { list-style: none; }
     .info-list li {
       display: flex; justify-content: space-between; gap: 12px;
       padding: 11px 0;
@@ -135,56 +150,12 @@
     .info-list .label { color: var(--muted); }
     .info-list .value { font-weight: 600; text-align: right; }
     .placeholder { color: var(--muted); font-style: italic; }
-
-    /* =========================================================
-       5. THE 3 STEPS (Generate > Get Key > Dashboard)
-       JavaScript marks each step "done", "active" or "locked".
-       ========================================================= */
-    .flow { list-style: none; margin-top: 18px; }
-
-    .flow-step {
-      display: flex; gap: 16px; align-items: flex-start;
-      padding: 18px 0;
-      border-top: 1px solid var(--glass-border);
-      transition: opacity 0.3s ease;
-    }
-    .flow-step.locked { opacity: 0.4; }
-
-    .flow-num {
-      flex: none;
-      width: 32px; height: 32px;
-      display: grid; place-items: center;
-      font-weight: 700;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--muted);
-      transition: background 0.3s, color 0.3s;
-    }
-    .flow-step.active .flow-num { background: rgba(47, 123, 255, 0.2); color: var(--accent-hover); }
-    .flow-step.done .flow-num { background: rgba(55, 201, 120, 0.18); color: var(--success); }
-
-    .flow-body { flex: 1; min-width: 0; }
-    .flow-body h3 { font-size: 1.05rem; }
-    .flow-body p { color: var(--muted); margin: 2px 0 12px; }
-
-    .key-display {
-      display: none;
-      font-family: "Consolas", "Courier New", monospace;
-      font-size: clamp(1.2rem, 4vw, 1.6rem);
-      letter-spacing: 2px;
-      color: var(--muted);
-      padding: 14px 16px;
-      margin-bottom: 12px;
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px dashed var(--glass-border);
-      border-radius: 12px;
-      text-align: center;
-    }
-    .key-display.show { display: block; animation: pop 0.35s ease both; }
+    .good { color: var(--success); font-style: normal; }
+    .bad  { color: var(--error);   font-style: normal; }
 
     .status {
       display: none;
-      margin-top: 12px;
+      margin-top: 14px;
       padding: 12px 14px;
       border-radius: 12px;
       font-weight: 600;
@@ -195,8 +166,10 @@
     .status.error   { color: var(--error);   background: rgba(255, 92, 108, 0.1); border-color: rgba(255, 92, 108, 0.35); }
     .status.info    { color: var(--info);    background: rgba(242, 184, 75, 0.1); border-color: rgba(242, 184, 75, 0.35); }
 
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 22px; }
+
     /* =========================================================
-       6. BUTTONS
+       5. BUTTONS
        ========================================================= */
     .btn {
       font: inherit;
@@ -216,16 +189,18 @@
     }
     .btn:active:not(:disabled) { transform: translateY(0) scale(0.96); box-shadow: none; }
     .btn:disabled { cursor: not-allowed; background: rgba(255, 255, 255, 0.1); color: var(--muted); }
+    .btn-ghost { background: rgba(255, 255, 255, 0.07); border-color: var(--glass-border); }
+    .btn-ghost:hover:not(:disabled) { background: rgba(255, 255, 255, 0.13); box-shadow: none; }
     .btn:focus-visible { outline: 3px solid rgba(85, 148, 255, 0.6); outline-offset: 2px; }
 
     /* =========================================================
-       7. FOOTER AND MOBILE
+       6. FOOTER AND MOBILE
        ========================================================= */
     footer { text-align: center; color: var(--muted); font-size: 0.85rem; padding: 20px; }
 
     @media (max-width: 520px) {
       .card { padding: 24px 16px; }
-      .flow-body .btn { width: 100%; }
+      .actions .btn { flex: 1 1 100%; }
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -242,59 +217,40 @@
         <div class="logo-box">Y</div>
         <div class="brand-name">Your Brand</div>
       </div>
+      <a href="index.html" style="text-decoration:none">
+        <button class="btn btn-ghost" type="button">Dashboard</button>
+      </a>
     </header>
 
     <div class="page-head">
-      <h1>Generate Key</h1>
-      <p>You finished Linkiverse. Follow the steps below to get your key.</p>
+      <h1>Your Key</h1>
+      <p>Finished Linkiverse? Your key appears here once we confirm you completed it. It works for 24 hours.</p>
     </div>
 
     <div class="preview-banner" role="note">
       <span>⚠️</span>
-      <span><strong>Preview mode.</strong> Nothing confirms yet that Linkiverse was completed, and no real key is created. The key you see below is a placeholder.</span>
+      <span><strong>Preview mode.</strong> Nothing confirms yet that Linkiverse was completed, and no real key exists. Everything below is a placeholder.</span>
     </div>
 
     <article class="card">
       <span class="badge">PLACEHOLDER</span>
       <h2>🔑 Your Key</h2>
+
+      <!-- Later, JavaScript fills in the ids below. -->
+      <div class="key-display" id="keyValue">XXXX-XXXX-XXXX</div>
+
       <ul class="info-list">
         <li><span class="label">Linkiverse</span><span class="value placeholder" id="completionStatus">Not verified yet</span></li>
+        <li><span class="label">Key status</span><span class="value placeholder" id="keyState">Not active</span></li>
+        <li><span class="label">Time left</span><span class="value placeholder" id="timeLeft">—</span></li>
       </ul>
 
-      <ol class="flow">
-        <!-- STEP 1: Generate -->
-        <li class="flow-step active" id="step1">
-          <div class="flow-num">1</div>
-          <div class="flow-body">
-            <h3>Generate</h3>
-            <p>Create a key for your account.</p>
-            <button class="btn" id="generateBtn" type="button">🔑 Generate</button>
-            <div class="status" id="generateStatus" role="status" aria-live="polite"></div>
-          </div>
-        </li>
+      <div class="status" id="pageStatus" role="status" aria-live="polite"></div>
 
-        <!-- STEP 2: Get Key -->
-        <li class="flow-step locked" id="step2">
-          <div class="flow-num">2</div>
-          <div class="flow-body">
-            <h3>Get Key</h3>
-            <p>Show your key so you can copy it.</p>
-            <div class="key-display" id="keyValue">XXXX-XXXX-XXXX</div>
-            <button class="btn" id="getKeyBtn" type="button" disabled>Get Key</button>
-            <div class="status" id="getKeyStatus" role="status" aria-live="polite"></div>
-          </div>
-        </li>
-
-        <!-- STEP 3: Go to the dashboard and activate -->
-        <li class="flow-step locked" id="step3">
-          <div class="flow-num">3</div>
-          <div class="flow-body">
-            <h3>Activate</h3>
-            <p>Go to the Dashboard and paste your key to activate it.</p>
-            <button class="btn" id="dashboardBtn" type="button" disabled>Go to Dashboard to Activate →</button>
-          </div>
-        </li>
-      </ol>
+      <div class="actions">
+        <button class="btn" id="copyBtn" type="button" disabled>Copy Key</button>
+        <button class="btn btn-ghost" id="getKeyBtn" type="button">🔑 Get Key</button>
+      </div>
     </article>
 
   </main>
@@ -311,11 +267,10 @@
 
     /* ---------------------------------------------------------
        SETTINGS
-       DASHBOARD_URL: where the Activate button sends the user.
-       index.html#activate opens the Redeem box on the dashboard.
        Keep this file and index.html in the same folder.
+       GET_KEY_URL opens the Get Key pop-up on the dashboard.
        --------------------------------------------------------- */
-    const DASHBOARD_URL = "index.html#activate";
+    const GET_KEY_URL = "index.html#getkey";
 
     /* ---------------------------------------------------------
        BACKEND TODO 4: SUPABASE / DATABASE CONNECTION
@@ -324,76 +279,116 @@
 
     const $ = (id) => document.getElementById(id);
 
-    function showStatus(box, type, message) {
+    function showStatus(type, message) {
+      const box = $("pageStatus");
       box.className = "status show " + type;   // type: "success", "error" or "info"
       box.textContent = message;
     }
 
-    // ---------- Steps: which one is open ----------
-    // current = 1, 2 or 3. Earlier steps are "done", later ones are "locked".
-    function setStep(current) {
-      [1, 2, 3].forEach((n) => {
-        const step = $("step" + n);
-        step.classList.toggle("done", n < current);
-        step.classList.toggle("active", n === current);
-        step.classList.toggle("locked", n > current);
-      });
-      $("generateBtn").disabled  = current !== 1;
-      $("getKeyBtn").disabled    = current !== 2;
-      $("dashboardBtn").disabled = current !== 3;
+    // Changes the text and color of one row in the list
+    function setValue(id, text, look) {
+      const el = $(id);
+      el.textContent = text;
+      el.className = "value " + look;          // look: "placeholder", "good" or "bad"
     }
+
+    // ---------- Three possible looks for this page ----------
+
+    // 1) Default: nothing verified, no key (what you see right now)
+    function renderNotVerified() {
+      $("keyValue").textContent = "XXXX-XXXX-XXXX";
+      $("keyValue").classList.remove("real");
+      setValue("completionStatus", "Not verified yet", "placeholder");
+      setValue("keyState", "Not active", "placeholder");
+      setValue("timeLeft", "—", "placeholder");
+      $("copyBtn").disabled = true;
+    }
+
+    // 2) Verified: show the real key and count down the 24 hours.
+    //    Not used yet. Later your server's answer calls this, e.g.
+    //    renderKey("THE-KEY-FROM-THE-SERVER", expiresAtInMilliseconds)
+    let countdownTimer = null;
+
+    function renderKey(key, expiresAt) {
+      $("keyValue").textContent = key;
+      $("keyValue").classList.add("real");
+      setValue("completionStatus", "Verified", "good");
+      setValue("keyState", "Active", "good");
+      $("copyBtn").disabled = false;
+
+      clearInterval(countdownTimer);
+      function tick() {
+        const left = expiresAt - Date.now();
+        if (left <= 0) { renderExpired(); return; }
+        const h = String(Math.floor(left / 3600000)).padStart(2, "0");
+        const m = String(Math.floor(left / 60000) % 60).padStart(2, "0");
+        const s = String(Math.floor(left / 1000) % 60).padStart(2, "0");
+        setValue("timeLeft", h + ":" + m + ":" + s, "good");
+      }
+      tick();
+      countdownTimer = setInterval(tick, 1000);
+    }
+
+    // 3) Expired: the 24 hours ran out, so the user starts again.
+    function renderExpired() {
+      clearInterval(countdownTimer);
+      setValue("keyState", "Expired", "bad");
+      setValue("timeLeft", "00:00:00", "bad");
+      $("copyBtn").disabled = true;
+      showStatus("error", "Your key expired. Press Get Key to get a new one.");
+    }
+
+    // ---------- Buttons ----------
+    $("getKeyBtn").addEventListener("click", () => {
+      window.location.href = GET_KEY_URL;
+    });
+
+    $("copyBtn").addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText($("keyValue").textContent);
+        showStatus("success", "Key copied.");
+      } catch (err) {
+        showStatus("error", "Could not copy. Select the key and copy it by hand.");
+      }
+    });
+
+    // ---------- When the page opens ----------
+    renderNotVerified();
 
     /* ---------------------------------------------------------
        BACKEND TODO 8: CALLBACK PARAMETERS
-       If Linkiverse adds anything to this page's address when it
-       sends the user back (a token, an id, a status), read it here:
+       When Linkiverse sends the user back, it may add a value to
+       this page's address (a token or hash). Read it here:
          const params = new URLSearchParams(window.location.search);
-         const token = params.get("PARAMETER-NAME-FROM-LINKIVERSE");
-       Check Linkiverse's documentation for the real names.
-       Do not trust these values on their own, since anyone can
-       type them into the address bar.
+         const proof = params.get("PARAMETER-NAME-FROM-LINKIVERSE");
+       Check Linkiverse's documentation for the real name.
+       Do not trust this value on its own, since anyone can type
+       it into the address bar.
        --------------------------------------------------------- */
 
     /* ---------------------------------------------------------
        BACKEND TODO 7: LINKIVERSE COMPLETION VERIFICATION
-       Anyone can open generate.html without finishing Linkiverse.
-       Later, send the callback values to your server as soon as
-       this page loads, and let the server confirm Linkiverse was
-       really completed. Only then set #completionStatus and let
-       the Generate button work. Until then the status stays
-       "Not verified yet".
+       Send the value from TODO 8 (and your one-time token) to
+       YOUR SERVER. The server checks it with Linkiverse and
+       decides if the user really finished. The page must never
+       decide this on its own.
        --------------------------------------------------------- */
 
-    // ---------- STEP 1: Generate ----------
-    $("generateBtn").addEventListener("click", () => {
-      /* -------------------------------------------------------
-         BACKEND TODO 2: KEY GENERATION
-         Later, ask your server to create a key for this user
-         here. The server should only do this after it verified
-         Linkiverse (TODO 7), and should reuse the same key if
-         this user already has one. Key creation must never
-         happen in this file.
-         ------------------------------------------------------- */
-      showStatus($("generateStatus"), "info", "Preview only: no real key was generated.");
-      setStep(2);
-    });
+    /* ---------------------------------------------------------
+       BACKEND TODO 2: KEY GENERATION AND ACTIVATION
+       If the server says "verified", it creates the key, saves it
+       with an expiry time 24 hours from now, and sends both back.
+       Then call:  renderKey(serverKey, serverExpiresAt);
+       If the user already has an active key, the server sends
+       that same key back instead of making a new one.
+       --------------------------------------------------------- */
 
-    // ---------- STEP 2: Get Key ----------
-    $("getKeyBtn").addEventListener("click", () => {
-      /* -------------------------------------------------------
-         BACKEND TODO 2 / 4: GET THE KEY FROM THE SERVER
-         Later, fetch the user's real key from your server or
-         database here, put it in #keyValue, and add a Copy button.
-         ------------------------------------------------------- */
-      $("keyValue").classList.add("show");
-      showStatus($("getKeyStatus"), "info", "Preview only: this is a placeholder, not a real key.");
-      setStep(3);
-    });
-
-    // ---------- STEP 3: Go to the dashboard ----------
-    $("dashboardBtn").addEventListener("click", () => {
-      window.location.href = DASHBOARD_URL;
-    });
+    /* ---------------------------------------------------------
+       BACKEND TODO 6: KEY EXPIRATION CHECKING
+       The countdown above is only for show. The server decides
+       if a key is still valid, every time the script checks it.
+       If the server says "expired", call renderExpired().
+       --------------------------------------------------------- */
   </script>
 </body>
 </html>
