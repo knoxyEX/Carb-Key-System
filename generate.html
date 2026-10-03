@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Your Brand | Your Key</title>
+  <title>Your Brand | Key Dashboard</title>
 
   <style>
     /* =========================================================
        1. COLORS AND SETTINGS
-       Keep these the same as in index.html so both pages match.
+       Change these values to restyle the whole website.
        ========================================================= */
     :root {
       --bg: #0b0d12;
       --bg-glow: #16213a;
-      --glass: rgba(255, 255, 255, 0.045);
+      --glass: rgba(255, 255, 255, 0.045);   /* see-through card color */
       --glass-border: rgba(255, 255, 255, 0.09);
       --text: #e9edf5;
       --muted: #8d96a8;
@@ -44,28 +44,26 @@
       background-attachment: fixed;
     }
 
-    main { flex: 1; width: 100%; max-width: 640px; margin: 0 auto; padding: 28px 20px 24px; }
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 28px 20px 24px;
+    }
 
     h1 { font-size: clamp(1.7rem, 5vw, 2.4rem); line-height: 1.15; }
     h2 { font-size: 1.15rem; margin-bottom: 14px; }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(12px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes pop {
-      from { opacity: 0; transform: scale(0.96) translateY(-6px); }
-      to   { opacity: 1; transform: scale(1) translateY(0); }
-    }
-
     /* =========================================================
-       3. TOP BAR: BRAND / LOGO
+       3. TOP BAR: BRAND / LOGO + NAVIGATION
        Replace "Y" and "Your Brand" with your own logo and name.
        ========================================================= */
     .topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex-wrap: wrap;
       gap: 16px;
       padding: 12px 18px;
       margin-bottom: 30px;
@@ -76,7 +74,9 @@
       -webkit-backdrop-filter: blur(14px);
       animation: fadeIn 0.6s ease both;
     }
+
     .brand { display: flex; align-items: center; gap: 12px; }
+
     .logo-box {
       width: 42px; height: 42px;
       border-radius: 12px;
@@ -87,14 +87,41 @@
     }
     .brand-name { font-size: 1.25rem; font-weight: 800; }
 
+    nav { display: flex; gap: 6px; }
+
+    .nav-link {
+      font: inherit;
+      font-weight: 600;
+      color: var(--muted);
+      background: transparent;
+      border: none;
+      border-radius: 10px;
+      padding: 9px 16px;
+      cursor: pointer;
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-link:hover { color: var(--text); background: rgba(255, 255, 255, 0.07); }
+    .nav-link.active { color: #fff; background: var(--accent); }
+
     /* =========================================================
-       4. PAGE CONTENT
+       4. PAGES (Dashboard / Get Key). JavaScript shows one at a time.
        ========================================================= */
-    .page-head { margin-bottom: 20px; animation: fadeIn 0.5s ease both; }
+    .view { display: none; }
+    .view.active { display: block; animation: fadeIn 0.45s ease both; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .page-head { margin-bottom: 20px; }
     .page-head p { color: var(--muted); margin-top: 6px; }
 
+    /* Banner that makes it obvious nothing is real yet */
     .preview-banner {
-      display: flex; gap: 12px; align-items: flex-start;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
       padding: 14px 16px;
       margin-bottom: 22px;
       color: var(--info);
@@ -104,6 +131,11 @@
       font-size: 0.95rem;
     }
 
+    /* =========================================================
+       5. GLASS CARDS
+       ========================================================= */
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
     .card {
       position: relative;
       padding: 26px 24px;
@@ -112,12 +144,15 @@
       border-radius: var(--radius);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
-      animation: fadeIn 0.6s ease both;
+      transition: border-color 0.25s, transform 0.25s;
     }
+    .card:hover { border-color: rgba(255, 255, 255, 0.18); transform: translateY(-3px); }
 
     .badge {
-      position: absolute; top: 18px; right: 18px;
-      font-size: 0.75rem; font-weight: 700;
+      position: absolute;
+      top: 18px; right: 18px;
+      font-size: 0.75rem;
+      font-weight: 700;
       color: var(--info);
       background: rgba(242, 184, 75, 0.12);
       border: 1px dashed rgba(242, 184, 75, 0.5);
@@ -136,13 +171,13 @@
       border: 1px dashed var(--glass-border);
       border-radius: 12px;
       text-align: center;
-      word-break: break-all;
     }
-    .key-display.real { color: var(--text); border-style: solid; }
 
     .info-list { list-style: none; }
     .info-list li {
-      display: flex; justify-content: space-between; gap: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
       padding: 11px 0;
       border-bottom: 1px solid var(--glass-border);
     }
@@ -150,9 +185,109 @@
     .info-list .label { color: var(--muted); }
     .info-list .value { font-weight: 600; text-align: right; }
     .placeholder { color: var(--muted); font-style: italic; }
-    .good { color: var(--success); font-style: normal; }
-    .bad  { color: var(--error);   font-style: normal; }
 
+    .actions { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 24px; }
+
+    /* =========================================================
+       6. BUTTONS
+       ========================================================= */
+    .btn {
+      font: inherit;
+      font-weight: 700;
+      color: #fff;
+      background: var(--accent);
+      border: 1px solid transparent;
+      border-radius: 12px;
+      padding: 13px 24px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+    .btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 22px rgba(47, 123, 255, 0.4);
+    }
+    .btn:active { transform: translateY(0) scale(0.96); box-shadow: none; }
+
+    .btn-ghost { background: rgba(255, 255, 255, 0.07); border-color: var(--glass-border); }
+    .btn-ghost:hover { background: rgba(255, 255, 255, 0.13); box-shadow: none; }
+
+    .btn:focus-visible, .nav-link:focus-visible, .key-input:focus-visible {
+      outline: 3px solid rgba(85, 148, 255, 0.6);
+      outline-offset: 2px;
+    }
+
+    /* =========================================================
+       7. GET KEY PAGE STEPS
+       ========================================================= */
+    .steps { list-style: none; counter-reset: step; }
+    .steps li {
+      counter-increment: step;
+      display: flex; gap: 14px; align-items: flex-start;
+      padding: 12px 0;
+    }
+    .steps li::before {
+      content: counter(step);
+      flex: none;
+      width: 30px; height: 30px;
+      display: grid; place-items: center;
+      font-weight: 700;
+      background: rgba(47, 123, 255, 0.18);
+      color: var(--accent-hover);
+      border-radius: 50%;
+    }
+
+    /* =========================================================
+       8. MODALS (pop-up windows)
+       ========================================================= */
+    .overlay {
+      position: fixed; inset: 0;
+      display: none;
+      align-items: center; justify-content: center;
+      padding: 20px;
+      background: rgba(5, 7, 12, 0.7);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 10;
+    }
+    .overlay.open { display: flex; animation: fadeOnly 0.25s ease both; }
+
+    .modal {
+      width: 100%; max-width: 440px;
+      padding: 28px 24px;
+      background: #141822;
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+      animation: pop 0.3s ease both;
+    }
+    .modal h2 { font-size: 1.3rem; margin-bottom: 8px; }
+    .modal p { color: var(--muted); margin-bottom: 18px; }
+    .modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 18px; }
+
+    @keyframes fadeOnly { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes pop {
+      from { opacity: 0; transform: scale(0.95) translateY(10px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .key-input {
+      width: 100%;
+      font: inherit;
+      color: var(--text);
+      background: #0d1016;
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 13px 15px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .key-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(47, 123, 255, 0.18);
+    }
+
+    /* Status messages inside modals (success / error / info) */
     .status {
       display: none;
       margin-top: 14px;
@@ -166,42 +301,23 @@
     .status.error   { color: var(--error);   background: rgba(255, 92, 108, 0.1); border-color: rgba(255, 92, 108, 0.35); }
     .status.info    { color: var(--info);    background: rgba(242, 184, 75, 0.1); border-color: rgba(242, 184, 75, 0.35); }
 
-    .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 22px; }
-
     /* =========================================================
-       5. BUTTONS
-       ========================================================= */
-    .btn {
-      font: inherit;
-      font-weight: 700;
-      color: #fff;
-      background: var(--accent);
-      border: 1px solid transparent;
-      border-radius: 12px;
-      padding: 12px 22px;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-    }
-    .btn:hover:not(:disabled) {
-      background: var(--accent-hover);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 22px rgba(47, 123, 255, 0.4);
-    }
-    .btn:active:not(:disabled) { transform: translateY(0) scale(0.96); box-shadow: none; }
-    .btn:disabled { cursor: not-allowed; background: rgba(255, 255, 255, 0.1); color: var(--muted); }
-    .btn-ghost { background: rgba(255, 255, 255, 0.07); border-color: var(--glass-border); }
-    .btn-ghost:hover:not(:disabled) { background: rgba(255, 255, 255, 0.13); box-shadow: none; }
-    .btn:focus-visible { outline: 3px solid rgba(85, 148, 255, 0.6); outline-offset: 2px; }
-
-    /* =========================================================
-       6. FOOTER AND MOBILE
+       9. FOOTER
        ========================================================= */
     footer { text-align: center; color: var(--muted); font-size: 0.85rem; padding: 20px; }
 
-    @media (max-width: 520px) {
-      .card { padding: 24px 16px; }
+    /* =========================================================
+       10. MOBILE LAYOUT
+       ========================================================= */
+    @media (max-width: 720px) {
+      .grid { grid-template-columns: 1fr; }
+      .topbar { justify-content: center; }
+      nav { width: 100%; justify-content: center; }
+      .nav-link { flex: 1; padding: 10px 6px; }
       .actions .btn { flex: 1 1 100%; }
+      .modal-actions .btn { flex: 1; }
     }
+
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation: none !important; transition: none !important; }
     }
@@ -211,217 +327,303 @@
 <body>
   <main>
 
-    <!-- ===== TOP BAR: LOGO ===== -->
+    <!-- ===== TOP BAR: LOGO + NAVIGATION =====
+         To use a real logo image, swap the .logo-box div for:
+         <img src="logo.png" alt="Your Brand" height="42"> -->
     <header class="topbar">
       <div class="brand">
         <div class="logo-box">Y</div>
         <div class="brand-name">Your Brand</div>
       </div>
-      <a href="index.html" style="text-decoration:none">
-        <button class="btn btn-ghost" type="button">Dashboard</button>
-      </a>
+      <nav aria-label="Main navigation">
+        <button class="nav-link active" data-nav="dashboard" type="button">Dashboard</button>
+        <button class="nav-link" data-nav="getkey" type="button">Get Key</button>
+        <button class="nav-link" data-nav="redeem" type="button">Redeem</button>
+      </nav>
     </header>
 
-    <div class="page-head">
-      <h1>Your Key</h1>
-      <p>Finished Linkiverse? Your key appears here. It works for 24 hours.</p>
-    </div>
+    <!-- ===== PAGE 1: DASHBOARD (main page) ===== -->
+    <section class="view active" id="view-dashboard">
+      <div class="page-head">
+        <h1>Key Dashboard</h1>
+        <p>Manage your key and account in one place.</p>
+      </div>
 
-    <div class="preview-banner" role="note">
-      <span>⚠️</span>
-      <span><strong>Testing mode.</strong> Keys are real, but Linkiverse completion is not checked yet. Remove this notice once that check is added.</span>
-    </div>
+      <div class="preview-banner" role="note">
+        <span>⚠️</span>
+        <span><strong>Preview mode.</strong> Everything below is a placeholder. No real key or account data is loaded, and nothing is connected yet.</span>
+      </div>
 
-    <article class="card">
-      <span class="badge" id="placeholderBadge">PLACEHOLDER</span>
-      <h2>🔑 Your Key</h2>
+      <div class="grid">
+        <!-- Key information card. Later, JavaScript fills in the ids below. -->
+        <article class="card">
+          <span class="badge">PLACEHOLDER</span>
+          <h2>🔑 Your Key</h2>
+          <div class="key-display" id="keyValue">XXXX-XXXX-XXXX</div>
+          <ul class="info-list">
+            <li><span class="label">Status</span><span class="value placeholder" id="keyStatus">Not Connected</span></li>
+            <li><span class="label">Plan</span><span class="value placeholder" id="keyPlan">—</span></li>
+            <li><span class="label">Expires</span><span class="value placeholder" id="keyExpires">—</span></li>
+          </ul>
+        </article>
 
-      <!-- Later, JavaScript fills in the ids below. -->
-      <div class="key-display" id="keyValue">XXXX-XXXX-XXXX</div>
-
-      <ul class="info-list">
-        <li><span class="label">Linkiverse</span><span class="value placeholder" id="completionStatus">Not verified yet</span></li>
-        <li><span class="label">Key status</span><span class="value placeholder" id="keyState">Not active</span></li>
-        <li><span class="label">Time left</span><span class="value placeholder" id="timeLeft">—</span></li>
-      </ul>
-
-      <div class="status" id="pageStatus" role="status" aria-live="polite"></div>
+        <!-- Account card. Later, JavaScript fills in the ids below. -->
+        <article class="card">
+          <span class="badge">PLACEHOLDER</span>
+          <h2>👤 Account</h2>
+          <ul class="info-list">
+            <li><span class="label">Roblox Username</span><span class="value placeholder" id="robloxName">Not Connected</span></li>
+            <li><span class="label">Roblox User ID</span><span class="value placeholder" id="robloxId">—</span></li>
+            <li><span class="label">Key Created</span><span class="value placeholder" id="keyCreated">—</span></li>
+          </ul>
+        </article>
+      </div>
 
       <div class="actions">
-        <button class="btn" id="copyBtn" type="button" disabled>Copy Key</button>
-        <button class="btn btn-ghost" id="getKeyBtn" type="button">🔑 Get Key</button>
+        <button class="btn" id="getKeyBtn" type="button">🔑 Get Key</button>
+        <button class="btn btn-ghost" id="redeemBtn" type="button">🔓 Redeem Key</button>
       </div>
-    </article>
+    </section>
+
+    <!-- ===== PAGE 2: GET KEY ===== -->
+    <section class="view" id="view-getkey">
+      <div class="page-head">
+        <h1>Get Key</h1>
+        <p>Here is how getting a key will work once everything is connected.</p>
+      </div>
+
+      <article class="card">
+        <ol class="steps">
+          <li>Press Get Key to start.</li>
+          <li>You will be sent to Linkiverse to finish the required steps.</li>
+          <li>You land on your key page, and your key is activated for 24 hours.</li>
+          <li>Copy the key into the script. When it expires, do these steps again.</li>
+        </ol>
+        <div class="actions">
+          <button class="btn" id="getKeyBtn2" type="button">🔑 Get Key</button>
+        </div>
+      </article>
+    </section>
 
   </main>
 
   <footer>Made with help from ChatGPT</footer>
 
+  <!-- ===== MODAL: GET KEY ===== -->
+  <div class="overlay" id="modal-getkey" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="getkeyTitle">
+      <h2 id="getkeyTitle">🔑 Get your key</h2>
+      <p>You will be sent to Linkiverse to complete the required steps. When you finish, Linkiverse brings you back to your key page. Your key lasts 24 hours.</p>
+      <div class="status" id="getkeyStatus" role="status" aria-live="polite"></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" data-close type="button">Close</button>
+        <button class="btn" id="continueBtn" type="button">Continue to Linkiverse</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MODAL: REDEEM KEY ===== -->
+  <div class="overlay" id="modal-redeem" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="redeemTitle">
+      <h2 id="redeemTitle">🔓 Redeem key</h2>
+      <p>Paste your key below.</p>
+      <input class="key-input" id="keyInput" type="text" placeholder="XXXX-XXXX-XXXX" autocomplete="off" spellcheck="false" aria-label="Your key">
+      <div class="status" id="redeemStatus" role="status" aria-live="polite"></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" data-close type="button">Cancel</button>
+        <button class="btn" id="submitRedeemBtn" type="button">Redeem</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     /* =========================================================
        JAVASCRIPT (front end only)
-       Nothing here creates a real key or checks Linkiverse.
+       Nothing here checks keys or loads real data.
        Search for "BACKEND TODO" to find every place the real
        system will be added later.
        ========================================================= */
 
     /* ---------------------------------------------------------
-       SETTINGS
-       Keep this file and index.html in the same folder.
-       GET_KEY_URL opens the Get Key pop-up on the dashboard.
-       --------------------------------------------------------- */
-    const GET_KEY_URL = "index.html#getkey";
-
-    // The publishable key is meant to be public. NEVER paste the
-    // "secret" or "service_role" key into this file.
-    const SUPABASE_URL = "https://talbpzgyaxyyelhvlmpl.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_pBFKLHML7WzLDFQ1_mri1Q_pc0qq4qw";
-
-    /* ---------------------------------------------------------
        BACKEND TODO 4: SUPABASE / DATABASE CONNECTION
-       Later, set up the database connection here.
-       --------------------------------------------------------- */
-
-    const $ = (id) => document.getElementById(id);
-
-    function showStatus(type, message) {
-      const box = $("pageStatus");
-      box.className = "status show " + type;   // type: "success", "error" or "info"
-      box.textContent = message;
-    }
-
-    // Changes the text and color of one row in the list
-    function setValue(id, text, look) {
-      const el = $(id);
-      el.textContent = text;
-      el.className = "value " + look;          // look: "placeholder", "good" or "bad"
-    }
-
-    // ---------- Three possible looks for this page ----------
-
-    // 1) Default: nothing verified, no key (what you see right now)
-    function renderNotVerified() {
-      $("keyValue").textContent = "XXXX-XXXX-XXXX";
-      $("keyValue").classList.remove("real");
-      $("placeholderBadge").style.display = "";
-      setValue("completionStatus", "Not verified yet", "placeholder");
-      setValue("keyState", "Not active", "placeholder");
-      setValue("timeLeft", "—", "placeholder");
-      $("copyBtn").disabled = true;
-    }
-
-    // 2) Verified: show the real key and count down the 24 hours.
-    //    Not used yet. Later your server's answer calls this, e.g.
-    //    renderKey("THE-KEY-FROM-THE-SERVER", expiresAtInMilliseconds)
-    let countdownTimer = null;
-
-    function renderKey(key, expiresAt) {
-      $("keyValue").textContent = key;
-      $("keyValue").classList.add("real");
-      $("placeholderBadge").style.display = "none";
-      // Change this to "Verified" once the Linkiverse check is added to claim-key
-      setValue("completionStatus", "Not checked yet", "placeholder");
-      setValue("keyState", "Active", "good");
-      $("copyBtn").disabled = false;
-
-      clearInterval(countdownTimer);
-      function tick() {
-        const left = expiresAt - Date.now();
-        if (left <= 0) { renderExpired(); return; }
-        const h = String(Math.floor(left / 3600000)).padStart(2, "0");
-        const m = String(Math.floor(left / 60000) % 60).padStart(2, "0");
-        const s = String(Math.floor(left / 1000) % 60).padStart(2, "0");
-        setValue("timeLeft", h + ":" + m + ":" + s, "good");
-      }
-      tick();
-      countdownTimer = setInterval(tick, 1000);
-    }
-
-    // 3) Expired: the 24 hours ran out, so the user starts again.
-    function renderExpired() {
-      clearInterval(countdownTimer);
-      try { localStorage.removeItem("keySessionToken"); } catch (e) {}
-      setValue("keyState", "Expired", "bad");
-      setValue("timeLeft", "00:00:00", "bad");
-      $("copyBtn").disabled = true;
-      showStatus("error", "Your key expired. Press Get Key to get a new one.");
-    }
-
-    // ---------- Buttons ----------
-    $("getKeyBtn").addEventListener("click", () => {
-      window.location.href = GET_KEY_URL;
-    });
-
-    $("copyBtn").addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText($("keyValue").textContent);
-        showStatus("success", "Key copied.");
-      } catch (err) {
-        showStatus("error", "Could not copy. Select the key and copy it by hand.");
-      }
-    });
-
-    // ---------- When the page opens ----------
-    renderNotVerified();
-
-    // Sends the saved token to the server (the claim-key function)
-    // and shows the key it sends back.
-    async function loadKey() {
-      let token = null;
-      try { token = localStorage.getItem("keySessionToken"); } catch (e) {}
-
-      if (!token) {
-        showStatus("info", "No key session found. Press Get Key to start.");
-        return;
-      }
-
-      showStatus("info", "Getting your key...");
-      try {
-        const res = await fetch(SUPABASE_URL + "/functions/v1/claim-key", {
-          method: "POST",
-          headers: { "apikey": SUPABASE_KEY, "Content-Type": "application/json" },
-          body: JSON.stringify({ token: token })
-        });
-        const data = await res.json();
-
-        if (res.ok && data.key) {
-          renderKey(data.key, new Date(data.expiresAt).getTime());
-          showStatus("success", "Your key is ready. It works for 24 hours.");
-        } else {
-          // Bad or expired session: forget it so the user can start again
-          if (res.status === 400 || res.status === 410) {
-            try { localStorage.removeItem("keySessionToken"); } catch (e) {}
-          }
-          showStatus("error", data.error || "Could not get your key.");
-        }
-      } catch (err) {
-        showStatus("error", "Could not reach the server. Refresh the page to try again.");
-      }
-    }
-
-    loadKey();
-
-    /* ---------------------------------------------------------
-       BACKEND TODO 8: CALLBACK PARAMETERS
-       If Linkiverse adds a value to this page's address when it
-       sends the user back (a token or hash), read it here:
-         const params = new URLSearchParams(window.location.search);
-         const proof = params.get("PARAMETER-NAME-FROM-LINKIVERSE");
-       Then send it to claim-key together with the token (add it to
-       the body in loadKey above).
+       Later, set up the database connection here (top of the
+       script), so every function below can use it.
        --------------------------------------------------------- */
 
     /* ---------------------------------------------------------
-       BACKEND TODO 7: LINKIVERSE COMPLETION VERIFICATION
-       This check goes inside the claim-key function on Supabase
-       (see the TODO comment there), never in this file.
+       BACKEND TODO 5: ROBLOX ACCOUNT LINKING
+       Later, add the code that links a Roblox account here, and
+       then fill the Account card with the ids:
+       robloxName, robloxId, keyCreated.
        --------------------------------------------------------- */
 
     /* ---------------------------------------------------------
        BACKEND TODO 6: KEY EXPIRATION CHECKING
-       The countdown here is only for show. The server decides if
-       a key is still valid. If it says "expired", call renderExpired().
+       Later, check whether the user's key has expired here, and
+       then fill the Key card with the ids:
+       keyValue, keyStatus, keyPlan, keyExpires.
        --------------------------------------------------------- */
+
+    /* ---------------------------------------------------------
+       LINKIVERSE SETTINGS (edit these two lines)
+       1. LINKIVERSE_URL: the link Linkiverse gives you for your
+          link/key page. Paste it between the quotes.
+       2. In the Linkiverse dashboard, set the DESTINATION URL
+          (where users go after finishing) to this page's address
+          but ending in generate.html, for example:
+            https://YOUR-SITE-ADDRESS/generate.html
+       --------------------------------------------------------- */
+    const LINKIVERSE_URL = "https://link-center.net/5201465/sHNdScrezVXM";   // BACKEND TODO 1: paste your Linkiverse link here
+
+    /* ---------------------------------------------------------
+       SUPABASE SETTINGS
+       The publishable key is meant to be public. NEVER paste the
+       "secret" or "service_role" key into this file.
+       --------------------------------------------------------- */
+    const SUPABASE_URL = "https://talbpzgyaxyyelhvlmpl.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_pBFKLHML7WzLDFQ1_mri1Q_pc0qq4qw";
+
+    // ---------- Helpers ----------
+    const $ = (id) => document.getElementById(id);
+
+    function showStatus(box, type, message) {
+      box.className = "status show " + type;   // type: "success", "error" or "info"
+      box.textContent = message;
+    }
+    function clearStatus(box) {
+      box.className = "status";
+      box.textContent = "";
+    }
+
+    // ---------- Navigation: show one page at a time ----------
+    function showView(name) {
+      document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+      $("view-" + name).classList.add("active");
+      document.querySelectorAll(".nav-link").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.nav === name);
+      });
+    }
+
+    // ---------- Modals: open and close pop-ups ----------
+    let lastFocused = null;
+
+    function openModal(name) {
+      lastFocused = document.activeElement;
+      const modal = $("modal-" + name);
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+      if (name === "redeem") setTimeout(() => $("keyInput").focus(), 50);
+    }
+
+    function closeModals() {
+      document.querySelectorAll(".overlay").forEach(m => {
+        m.classList.remove("open");
+        m.setAttribute("aria-hidden", "true");
+      });
+      clearStatus($("getkeyStatus"));
+      clearStatus($("redeemStatus"));
+      if (lastFocused) lastFocused.focus();
+    }
+
+    // Close with Cancel/Close buttons, clicking outside, or the Esc key
+    document.querySelectorAll("[data-close]").forEach(btn => btn.addEventListener("click", closeModals));
+    document.querySelectorAll(".overlay").forEach(o => {
+      o.addEventListener("click", (e) => { if (e.target === o) closeModals(); });
+    });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModals(); });
+
+    // ---------- Top navigation buttons ----------
+    document.querySelectorAll(".nav-link").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const target = btn.dataset.nav;
+        if (target === "redeem") {
+          openModal("redeem");          // Redeem opens the pop-up instead of a page
+        } else {
+          showView(target);
+        }
+      });
+    });
+
+    // ---------- GET KEY buttons (dashboard + Get Key page) ----------
+    $("getKeyBtn").addEventListener("click", () => openModal("getkey"));
+    $("getKeyBtn2").addEventListener("click", () => openModal("getkey"));
+
+    $("continueBtn").addEventListener("click", async () => {
+      // No Linkiverse link yet? Tell the owner instead of sending the user nowhere.
+      if (LINKIVERSE_URL === "") {
+        showStatus($("getkeyStatus"), "error", "No Linkiverse link added yet. Paste it into LINKIVERSE_URL in the code.");
+        return;
+      }
+
+      const btn = $("continueBtn");
+      btn.disabled = true;
+      showStatus($("getkeyStatus"), "info", "Starting...");
+
+      try {
+        // Ask the server for a one-time session token (the start-session function)
+        const res = await fetch(SUPABASE_URL + "/functions/v1/rapid-task", {
+          method: "POST",
+          headers: { "apikey": SUPABASE_KEY, "Content-Type": "application/json" },
+          body: "{}"
+        });
+        const data = await res.json();
+        if (!res.ok || !data.token) throw new Error("no token");
+
+        // Remember the token. generate.html reads it when the user comes back.
+        localStorage.setItem("keySessionToken", data.token);
+
+        /* -----------------------------------------------------
+           BACKEND TODO 1: LINKIVERSE REDIRECT
+           The user is sent to your Linkiverse link here.
+           BACKEND TODO 7: the check that they really finished
+           Linkiverse belongs in the server function "claim-key".
+           ----------------------------------------------------- */
+        window.location.href = LINKIVERSE_URL;
+      } catch (err) {
+        showStatus($("getkeyStatus"), "error", "Could not start. Please try again.");
+        btn.disabled = false;
+      }
+    });
+
+    // ---------- REDEEM KEY buttons ----------
+    $("redeemBtn").addEventListener("click", () => openModal("redeem"));
+
+    function redeemKey() {
+      const key = $("keyInput").value.trim();
+
+      if (key === "") {
+        showStatus($("redeemStatus"), "error", "Enter your key first.");
+        return;
+      }
+
+      /* -------------------------------------------------------
+         BACKEND TODO 3: KEY VALIDATION
+         Later, send `key` to your backend here and wait for
+         the answer. Then show the result, for example:
+           showStatus($("redeemStatus"), "success", "Key accepted!");
+           showStatus($("redeemStatus"), "error", "That key is not valid.");
+         The real check must run on a server. Never put the
+         list of valid keys in this file.
+         ------------------------------------------------------- */
+
+      showStatus($("redeemStatus"), "info", "Key verification is not connected yet.");
+    }
+
+    $("submitRedeemBtn").addEventListener("click", redeemKey);
+    $("keyInput").addEventListener("keydown", (e) => { if (e.key === "Enter") redeemKey(); });
+
+    // ---------- Coming from the key page ----------
+    // generate.html sends users here with  #getkey  on the end
+    // (the "Get Key" button there), so the Get Key pop-up opens.
+    function handleHashLinks() {
+      if (window.location.hash === "#getkey") {
+        showView("dashboard");
+        openModal("getkey");
+      }
+    }
+
+    handleHashLinks();
+    window.addEventListener("hashchange", handleHashLinks);
   </script>
 </body>
 </html>
