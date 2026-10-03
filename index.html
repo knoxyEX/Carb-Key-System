@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your Brand | Key Dashboard</title>
+
+  <style>
+    /* =========================================================
+       1. COLORS AND SETTINGS
+       Change these values to restyle the whole website.
+       ========================================================= */
+    :root {
+      --bg: #0b0d12;
+      --bg-glow: #16213a;
+      --glass: rgba(255, 255, 255, 0.045);   /* see-through card color */
+      --glass-border: rgba(255, 255, 255, 0.09);
+      --text: #e9edf5;
+      --muted: #8d96a8;
+      --accent: #2f7bff;
+      --accent-hover: #5594ff;
+      --success: #37c978;
+      --error: #ff5c6c;
+      --info: #f2b84b;
+      --radius: 18px;
+    }
+
+    /* =========================================================
+       2. BASIC PAGE SETUP
+       ========================================================= */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+      color: var(--text);
+      line-height: 1.5;
+      background:
+        radial-gradient(ellipse at top left, var(--bg-glow) 0%, transparent 55%),
+        radial-gradient(ellipse at bottom right, #1a1440 0%, transparent 50%),
+        var(--bg);
+      background-attachment: fixed;
+    }
+
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 28px 20px 24px;
+    }
+
+    h1 { font-size: clamp(1.7rem, 5vw, 2.4rem); line-height: 1.15; }
+    h2 { font-size: 1.15rem; margin-bottom: 14px; }
+
+    /* =========================================================
+       3. TOP BAR: BRAND / LOGO + NAVIGATION
+       Replace "Y" and "Your Brand" with your own logo and name.
+       ========================================================= */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding: 12px 18px;
+      margin-bottom: 30px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      animation: fadeIn 0.6s ease both;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; }
+
+    .logo-box {
+      width: 42px; height: 42px;
+      border-radius: 12px;
+      display: grid; place-items: center;
+      font-weight: 800; font-size: 1.2rem;
+      background: linear-gradient(135deg, var(--accent), #1b4fd0);
+      box-shadow: 0 6px 20px rgba(47, 123, 255, 0.35);
+    }
+    .brand-name { font-size: 1.25rem; font-weight: 800; }
+
+    nav { display: flex; gap: 6px; }
+
+    .nav-link {
+      font: inherit;
+      font-weight: 600;
+      color: var(--muted);
+      background: transparent;
+      border: none;
+      border-radius: 10px;
+      padding: 9px 16px;
+      cursor: pointer;
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-link:hover { color: var(--text); background: rgba(255, 255, 255, 0.07); }
+    .nav-link.active { color: #fff; background: var(--accent); }
+
+    /* =========================================================
+       4. PAGES (Dashboard / Get Key). JavaScript shows one at a time.
+       ========================================================= */
+    .view { display: none; }
+    .view.active { display: block; animation: fadeIn 0.45s ease both; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .page-head { margin-bottom: 20px; }
+    .page-head p { color: var(--muted); margin-top: 6px; }
+
+    /* Banner that makes it obvious nothing is real yet */
+    .preview-banner {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 14px 16px;
+      margin-bottom: 22px;
+      color: var(--info);
+      background: rgba(242, 184, 75, 0.09);
+      border: 1px solid rgba(242, 184, 75, 0.35);
+      border-radius: 14px;
+      font-size: 0.95rem;
+    }
+
+    /* =========================================================
+       5. GLASS CARDS
+       ========================================================= */
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+    .card {
+      position: relative;
+      padding: 26px 24px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      transition: border-color 0.25s, transform 0.25s;
+    }
+    .card:hover { border-color: rgba(255, 255, 255, 0.18); transform: translateY(-3px); }
+
+    .badge {
+      position: absolute;
+      top: 18px; right: 18px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--info);
+      background: rgba(242, 184, 75, 0.12);
+      border: 1px dashed rgba(242, 184, 75, 0.5);
+      border-radius: 999px;
+      padding: 3px 10px;
+    }
+
+    .key-display {
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: clamp(1.3rem, 4vw, 1.7rem);
+      letter-spacing: 2px;
+      color: var(--muted);
+      padding: 14px 16px;
+      margin-bottom: 18px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px dashed var(--glass-border);
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .info-list { list-style: none; }
+    .info-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .info-list li:last-child { border-bottom: none; }
+    .info-list .label { color: var(--muted); }
+    .info-list .value { font-weight: 600; text-align: right; }
+    .placeholder { color: var(--muted); font-style: italic; }
+
+    .actions { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 24px; }
+
+    /* =========================================================
+       6. BUTTONS
+       ========================================================= */
+    .btn {
+      font: inherit;
+      font-weight: 700;
+      color: #fff;
+      background: var(--accent);
+      border: 1px solid transparent;
+      border-radius: 12px;
+      padding: 13px 24px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+    .btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 22px rgba(47, 123, 255, 0.4);
+    }
+    .btn:active { transform: translateY(0) scale(0.96); box-shadow: none; }
+
+    .btn-ghost { background: rgba(255, 255, 255, 0.07); border-color: var(--glass-border); }
+    .btn-ghost:hover { background: rgba(255, 255, 255, 0.13); box-shadow: none; }
+
+    .btn:focus-visible, .nav-link:focus-visible, .key-input:focus-visible {
+      outline: 3px solid rgba(85, 148, 255, 0.6);
+      outline-offset: 2px;
+    }
+
+    /* =========================================================
+       7. GET KEY PAGE STEPS
+       ========================================================= */
+    .steps { list-style: none; counter-reset: step; }
+    .steps li {
+      counter-increment: step;
+      display: flex; gap: 14px; align-items: flex-start;
+      padding: 12px 0;
+    }
+    .steps li::before {
+      content: counter(step);
+      flex: none;
+      width: 30px; height: 30px;
+      display: grid; place-items: center;
+      font-weight: 700;
+      background: rgba(47, 123, 255, 0.18);
+      color: var(--accent-hover);
+      border-radius: 50%;
+    }
+
+    /* =========================================================
+       8. MODALS (pop-up windows)
+       ========================================================= */
+    .overlay {
+      position: fixed; inset: 0;
+      display: none;
+      align-items: center; justify-content: center;
+      padding: 20px;
+      background: rgba(5, 7, 12, 0.7);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 10;
+    }
+    .overlay.open { display: flex; animation: fadeOnly 0.25s ease both; }
+
+    .modal {
+      width: 100%; max-width: 440px;
+      padding: 28px 24px;
+      background: #141822;
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+      animation: pop 0.3s ease both;
+    }
+    .modal h2 { font-size: 1.3rem; margin-bottom: 8px; }
+    .modal p { color: var(--muted); margin-bottom: 18px; }
+    .modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 18px; }
+
+    @keyframes fadeOnly { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes pop {
+      from { opacity: 0; transform: scale(0.95) translateY(10px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .key-input {
+      width: 100%;
+      font: inherit;
+      color: var(--text);
+      background: #0d1016;
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 13px 15px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .key-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(47, 123, 255, 0.18);
+    }
+
+    /* Status messages inside modals (success / error / info) */
+    .status {
+      display: none;
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-weight: 600;
+      border: 1px solid transparent;
+    }
+    .status.show { display: block; animation: pop 0.3s ease both; }
+    .status.success { color: var(--success); background: rgba(55, 201, 120, 0.1); border-color: rgba(55, 201, 120, 0.35); }
+    .status.error   { color: var(--error);   background: rgba(255, 92, 108, 0.1); border-color: rgba(255, 92, 108, 0.35); }
+    .status.info    { color: var(--info);    background: rgba(242, 184, 75, 0.1); border-color: rgba(242, 184, 75, 0.35); }
+
+    /* =========================================================
+       9. FOOTER
+       ========================================================= */
+    footer { text-align: center; color: var(--muted); font-size: 0.85rem; padding: 20px; }
+
+    /* =========================================================
+       10. MOBILE LAYOUT
+       ========================================================= */
+    @media (max-width: 720px) {
+      .grid { grid-template-columns: 1fr; }
+      .topbar { justify-content: center; }
+      nav { width: 100%; justify-content: center; }
+      .nav-link { flex: 1; padding: 10px 6px; }
+      .actions .btn { flex: 1 1 100%; }
+      .modal-actions .btn { flex: 1; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+
+    <!-- ===== TOP BAR: LOGO + NAVIGATION =====
+         To use a real logo image, swap the .logo-box div for:
+         <img src="logo.png" alt="Your Brand" height="42"> -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo-box">Y</div>
+        <div class="brand-name">Your Brand</div>
+      </div>
+      <nav aria-label="Main navigation">
+        <button class="nav-link active" data-nav="dashboard" type="button">Dashboard</button>
+        <button class="nav-link" data-nav="getkey" type="button">Get Key</button>
+        <button class="nav-link" data-nav="redeem" type="button">Redeem</button>
+      </nav>
+    </header>
+
+    <!-- ===== PAGE 1: DASHBOARD (main page) ===== -->
+    <section class="view active" id="view-dashboard">
+      <div class="page-head">
+        <h1>Key Dashboard</h1>
+        <p>Manage your key and account in one place.</p>
+      </div>
+
+      <div class="preview-banner" role="note">
+        <span>⚠️</span>
+        <span><strong>Preview mode.</strong> Everything below is a placeholder. No real key or account data is loaded, and nothing is connected yet.</span>
+      </div>
+
+      <div class="grid">
+        <!-- Key information card. Later, JavaScript fills in the ids below. -->
+        <article class="card">
+          <span class="badge">PLACEHOLDER</span>
+          <h2>🔑 Your Key</h2>
+          <div class="key-display" id="keyValue">XXXX-XXXX-XXXX</div>
+          <ul class="info-list">
+            <li><span class="label">Status</span><span class="value placeholder" id="keyStatus">Not Connected</span></li>
+            <li><span class="label">Plan</span><span class="value placeholder" id="keyPlan">—</span></li>
+            <li><span class="label">Expires</span><span class="value placeholder" id="keyExpires">—</span></li>
+          </ul>
+        </article>
+
+        <!-- Account card. Later, JavaScript fills in the ids below. -->
+        <article class="card">
+          <span class="badge">PLACEHOLDER</span>
+          <h2>👤 Account</h2>
+          <ul class="info-list">
+            <li><span class="label">Roblox Username</span><span class="value placeholder" id="robloxName">Not Connected</span></li>
+            <li><span class="label">Roblox User ID</span><span class="value placeholder" id="robloxId">—</span></li>
+            <li><span class="label">Key Created</span><span class="value placeholder" id="keyCreated">—</span></li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="actions">
+        <button class="btn" id="getKeyBtn" type="button">🔑 Get Key</button>
+        <button class="btn btn-ghost" id="redeemBtn" type="button">🔓 Redeem Key</button>
+      </div>
+    </section>
+
+    <!-- ===== PAGE 2: GET KEY ===== -->
+    <section class="view" id="view-getkey">
+      <div class="page-head">
+        <h1>Get Key</h1>
+        <p>Here is how getting a key will work once everything is connected.</p>
+      </div>
+
+      <article class="card">
+        <ol class="steps">
+          <li>Press Get Key to start.</li>
+          <li>You will be sent to Linkiverse to finish the required steps.</li>
+          <li>You land on your key page, and your key is activated for 24 hours.</li>
+          <li>Copy the key into the script. When it expires, do these steps again.</li>
+        </ol>
+        <div class="actions">
+          <button class="btn" id="getKeyBtn2" type="button">🔑 Get Key</button>
+        </div>
+      </article>
+    </section>
+
+  </main>
+
+  <footer>Made with help from ChatGPT</footer>
+
+  <!-- ===== MODAL: GET KEY ===== -->
+  <div class="overlay" id="modal-getkey" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="getkeyTitle">
+      <h2 id="getkeyTitle">🔑 Get your key</h2>
+      <p>You will be sent to Linkiverse to complete the required steps. When you finish, Linkiverse brings you back to your key page. Your key lasts 24 hours.</p>
+      <div class="status" id="getkeyStatus" role="status" aria-live="polite"></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" data-close type="button">Close</button>
+        <button class="btn" id="continueBtn" type="button">Continue to Linkiverse</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MODAL: REDEEM KEY ===== -->
+  <div class="overlay" id="modal-redeem" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="redeemTitle">
+      <h2 id="redeemTitle">🔓 Redeem key</h2>
+      <p>Paste your key below.</p>
+      <input class="key-input" id="keyInput" type="text" placeholder="XXXX-XXXX-XXXX" autocomplete="off" spellcheck="false" aria-label="Your key">
+      <div class="status" id="redeemStatus" role="status" aria-live="polite"></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" data-close type="button">Cancel</button>
+        <button class="btn" id="submitRedeemBtn" type="button">Redeem</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* =========================================================
+       JAVASCRIPT (front end only)
+       Nothing here checks keys or loads real data.
+       Search for "BACKEND TODO" to find every place the real
+       system will be added later.
+       ========================================================= */
+
+    /* ---------------------------------------------------------
+       BACKEND TODO 4: SUPABASE / DATABASE CONNECTION
+       Later, set up the database connection here (top of the
+       script), so every function below can use it.
+       --------------------------------------------------------- */
+
+    /* ---------------------------------------------------------
+       BACKEND TODO 5: ROBLOX ACCOUNT LINKING
+       Later, add the code that links a Roblox account here, and
+       then fill the Account card with the ids:
+       robloxName, robloxId, keyCreated.
+       --------------------------------------------------------- */
+
+    /* ---------------------------------------------------------
+       BACKEND TODO 6: KEY EXPIRATION CHECKING
+       Later, check whether the user's key has expired here, and
+       then fill the Key card with the ids:
+       keyValue, keyStatus, keyPlan, keyExpires.
+       --------------------------------------------------------- */
+
+    /* ---------------------------------------------------------
+       LINKIVERSE SETTINGS (edit these two lines)
+       1. LINKIVERSE_URL: the link Linkiverse gives you for your
+          link/key page. Paste it between the quotes.
+       2. In the Linkiverse dashboard, set the DESTINATION URL
+          (where users go after finishing) to this page's address
+          but ending in generate.html, for example:
+            https://YOUR-SITE-ADDRESS/generate.html
+       --------------------------------------------------------- */
+    const LINKIVERSE_URL = "https://link-hub.net/5201465/Zzdt3PJvLPFj";   // BACKEND TODO 1: paste your Linkiverse link here
+
+    /* ---------------------------------------------------------
+       SUPABASE SETTINGS
+       The publishable key is meant to be public. NEVER paste the
+       "secret" or "service_role" key into this file.
+       --------------------------------------------------------- */
+    const SUPABASE_URL = "https://talbpzgyaxyyelhvlmpl.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_pBFKLHML7WzLDFQ1_mri1Q_pc0qq4qw";
+
+    // ---------- Helpers ----------
+    const $ = (id) => document.getElementById(id);
+
+    function showStatus(box, type, message) {
+      box.className = "status show " + type;   // type: "success", "error" or "info"
+      box.textContent = message;
+    }
+    function clearStatus(box) {
+      box.className = "status";
+      box.textContent = "";
+    }
+
+    // ---------- Navigation: show one page at a time ----------
+    function showView(name) {
+      document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+      $("view-" + name).classList.add("active");
+      document.querySelectorAll(".nav-link").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.nav === name);
+      });
+    }
+
+    // ---------- Modals: open and close pop-ups ----------
+    let lastFocused = null;
+
+    function openModal(name) {
+      lastFocused = document.activeElement;
+      const modal = $("modal-" + name);
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+      if (name === "redeem") setTimeout(() => $("keyInput").focus(), 50);
+    }
+
+    function closeModals() {
+      document.querySelectorAll(".overlay").forEach(m => {
+        m.classList.remove("open");
+        m.setAttribute("aria-hidden", "true");
+      });
+      clearStatus($("getkeyStatus"));
+      clearStatus($("redeemStatus"));
+      if (lastFocused) lastFocused.focus();
+    }
+
+    // Close with Cancel/Close buttons, clicking outside, or the Esc key
+    document.querySelectorAll("[data-close]").forEach(btn => btn.addEventListener("click", closeModals));
+    document.querySelectorAll(".overlay").forEach(o => {
+      o.addEventListener("click", (e) => { if (e.target === o) closeModals(); });
+    });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModals(); });
+
+    // ---------- Top navigation buttons ----------
+    document.querySelectorAll(".nav-link").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const target = btn.dataset.nav;
+        if (target === "redeem") {
+          openModal("redeem");          // Redeem opens the pop-up instead of a page
+        } else {
+          showView(target);
+        }
+      });
+    });
+
+    // ---------- GET KEY buttons (dashboard + Get Key page) ----------
+    $("getKeyBtn").addEventListener("click", () => openModal("getkey"));
+    $("getKeyBtn2").addEventListener("click", () => openModal("getkey"));
+
+    $("continueBtn").addEventListener("click", async () => {
+      // No Linkiverse link yet? Tell the owner instead of sending the user nowhere.
+      if (LINKIVERSE_URL === "") {
+        showStatus($("getkeyStatus"), "error", "No Linkiverse link added yet. Paste it into LINKIVERSE_URL in the code.");
+        return;
+      }
+
+      const btn = $("continueBtn");
+      btn.disabled = true;
+      showStatus($("getkeyStatus"), "info", "Starting...");
+
+      try {
+        // Ask the server for a one-time session token (the start-session function)
+        const res = await fetch(SUPABASE_URL + "/functions/v1/rapid-task", {
+          method: "POST",
+          headers: { "apikey": SUPABASE_KEY, "Content-Type": "application/json" },
+          body: "{}"
+        });
+        const data = await res.json();
+        if (!res.ok || !data.token) throw new Error("no token");
+
+        // Remember the token. generate.html reads it when the user comes back.
+        localStorage.setItem("keySessionToken", data.token);
+
+        /* -----------------------------------------------------
+           BACKEND TODO 1: LINKIVERSE REDIRECT
+           The user is sent to your Linkiverse link here.
+           BACKEND TODO 7: the check that they really finished
+           Linkiverse belongs in the server function "claim-key".
+           ----------------------------------------------------- */
+        window.location.href = LINKIVERSE_URL;
+      } catch (err) {
+        showStatus($("getkeyStatus"), "error", "Could not start. Please try again.");
+        btn.disabled = false;
+      }
+    });
+
+    // ---------- REDEEM KEY buttons ----------
+    $("redeemBtn").addEventListener("click", () => openModal("redeem"));
+
+    function redeemKey() {
+      const key = $("keyInput").value.trim();
+
+      if (key === "") {
+        showStatus($("redeemStatus"), "error", "Enter your key first.");
+        return;
+      }
+
+      /* -------------------------------------------------------
+         BACKEND TODO 3: KEY VALIDATION
+         Later, send `key` to your backend here and wait for
+         the answer. Then show the result, for example:
+           showStatus($("redeemStatus"), "success", "Key accepted!");
+           showStatus($("redeemStatus"), "error", "That key is not valid.");
+         The real check must run on a server. Never put the
+         list of valid keys in this file.
+         ------------------------------------------------------- */
+
+      showStatus($("redeemStatus"), "info", "Key verification is not connected yet.");
+    }
+
+    $("submitRedeemBtn").addEventListener("click", redeemKey);
+    $("keyInput").addEventListener("keydown", (e) => { if (e.key === "Enter") redeemKey(); });
+
+    // ---------- Coming from the key page ----------
+    // generate.html sends users here with  #getkey  on the end
+    // (the "Get Key" button there), so the Get Key pop-up opens.
+    function handleHashLinks() {
+      if (window.location.hash === "#getkey") {
+        showView("dashboard");
+        openModal("getkey");
+      }
+    }
+
+    handleHashLinks();
+    window.addEventListener("hashchange", handleHashLinks);
+  </script>
+</body>
+</html>
